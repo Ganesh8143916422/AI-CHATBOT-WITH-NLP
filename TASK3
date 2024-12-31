@@ -1,0 +1,40 @@
+import nltk
+import spacy
+from nltk.chat.util import Chat, reflections
+from nltk.tokenize import word_tokenize
+from nltk import pos_tag
+from spacy import load
+
+nltk.download('punkt')
+
+nlp = load('en_core_web_sm')
+
+responses = [
+    (r'hi|hello|hey', ['Hello! How can I help you today?', 'Hi there! How can I assist you?']),
+    (r'what is your name?', ['I am a chatbot created to assist you.']),
+    (r'how are you?', ['I am doing great, thank you!', 'I am good, how can I assist you?']),
+    (r'what can you do?', ['I can help you answer questions and provide information.']),
+    (r'bye|exit|quit', ['Goodbye! Have a great day!', 'Bye! It was nice talking to you!'])
+]
+
+def chatbot():
+    chat = Chat(responses, reflections)
+    print("Chatbot: Hello! Type 'quit' to exit.")
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() in ['quit', 'exit', 'bye']:
+            print("Chatbot: Goodbye!")
+            break
+        response = chat.respond(user_input)
+        if response:
+            print("Chatbot:", response)
+        else:
+            doc = nlp(user_input)
+            entities = [ent.text for ent in doc.ents]
+            if len(entities) > 0:
+                print("Chatbot: I see you mentioned", ", ".join(entities))
+            else:
+                print("Chatbot: Sorry, I don't understand that. Could you ask something else?")
+                
+if __name__ == "__main__":
+    chatbot()
